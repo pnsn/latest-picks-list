@@ -1,4 +1,4 @@
-#!/home/seis/miniconda3/envs/squac/bin/python
+#!/usr/bin/python
 
 import os
 import psycopg2
