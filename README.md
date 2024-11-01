@@ -1,7 +1,9 @@
 # latest_picks_list
-Generate text file of latest picks for each channel used by PNSN.
+Generate text file of latest picks for each channel used by PNSN (includes non-PNSN stations like BK, CN).
+<br>
 <br>
 Simple python script that makes query to the AQMS post-processing db and finds the latest pick for each channel as well as counts over the last week, month and year.
+<br>
 <br>
 Results are spit out into two text files sorted by either NET.STA or latest pick time.
 <br>
