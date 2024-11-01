@@ -1,13 +1,17 @@
 # latest_picks_list
 Generate text file of latest picks for each channel used by PNSN.
-
+<br>
 Simple python script that makes query to the AQMS post-processing db and finds the latest pick for each channel as well as counts over the last week, month and year.
-
+<br>
 Results are spit out into two text files sorted by either NET.STA or latest pick time.
-
+<br>
+<br>
 Updated daily at 7am and noon (local):
+<br>
 [latest_picks_sncl_sort](https://seismo.ess.washington.edu/~ahutko/latest_picks_sncl_sort)
+<br>
 [latest_picks_time_sort](https://seismo.ess.washington.edu/~ahutko/latest_picks_time_sort)
+<br?
 
 '''
 latest_picks_sncl_sort:
