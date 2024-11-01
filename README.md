@@ -11,7 +11,7 @@ Updated daily at 7am and noon (local):
 [latest_picks_sncl_sort](https://seismo.ess.washington.edu/~ahutko/latest_picks_sncl_sort)
 <br>
 [latest_picks_time_sort](https://seismo.ess.washington.edu/~ahutko/latest_picks_time_sort)
-<br?
+<br>
 
 '''
 latest_picks_sncl_sort:
