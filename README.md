@@ -25,4 +25,6 @@ and the last time the range (in counts) exceeded "really low", i.e. last time re
 <br>
 "really low" was empirically determined for each channel type by data mining across all of PNSN.
 <br>
+This is determined by pulling measurements from SQUAC which is usually pretty reliable, but very rarely craps out.
+<br>
 ![latest_picks_list](https://github.com/user-attachments/assets/31057ab0-287c-459b-aff5-ae97086939e6)
