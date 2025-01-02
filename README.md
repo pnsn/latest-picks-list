@@ -8,7 +8,7 @@ Simple python script that makes query to the AQMS post-processing db and finds t
 Results are spit out into two text files sorted by either NET.STA or latest pick time.
 <br>
 <br>
-Updated daily at 7am and noon (local):
+Updated daily at 6am and noon (local):
 <br>
 [latest_picks_sncl_sort](https://seismo.ess.washington.edu/~ahutko/latest_picks_sncl_sort)
 <br>
@@ -19,6 +19,10 @@ What the files look like (roughly 2400 lines/SNCLs long)
 <br>
 Shown are the latest pick per channel and the event it came from.
 <br>
-At the end of the line is the N picks for that channel over the last week, month and year.
-
+At the end of the line is the N picks for that channel over the last week, month and year
+<br>
+and the last time the range (in counts) exceeded "really low", i.e. last time real data was sent.
+<br>
+"really low" was empirically determined for each channel type by data mining across all of PNSN.
+<br>
 ![latest_picks_list](https://github.com/user-attachments/assets/31057ab0-287c-459b-aff5-ae97086939e6)

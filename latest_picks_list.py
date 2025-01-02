@@ -1,19 +1,24 @@
 #!/usr/bin/python
 
+# Script to write list of SNCLs with info on latest time the channel
+#   was picked as well as latest time the 1) mean amp in counts and 
+#   2) 5Hz power exceeded  the 2nd percentile across the PNSN for 
+#   that channel code.  Also included are latest values for those
+#   two metrics.
+
+
 import os
 import psycopg2
-from datetime import datetime
+from datetime import datetime, timedelta, timezone 
 import pytz
+from find_latest_breach import find_latest_breach
+from collections import defaultdict
+import logging
 
 DB_NAME = os.environ['AQMS_DB']
 DB_USER = os.environ['AQMS_USER']
 DB_HOST = os.environ['AQMS_HOST1']  # check which is currently secondary
 DB_PASSWORD = os.environ['AQMS_PASSWD']
-
-import psycopg2
-from datetime import datetime, timedelta
-import pytz
-from collections import defaultdict
 
 def get_last_picks_for_network(nets, sort_by_sncl=True, file_name='output.txt'):
     try:
@@ -99,6 +104,18 @@ def get_last_picks_for_network(nets, sort_by_sncl=True, file_name='output.txt'):
             if nslc not in latest_picks or result['datetime'] > latest_picks[nslc]['datetime']:
                 latest_picks[nslc] = result
 
+        # Find latest breach for each nslc for range (SQUAC metricid = 85) and 5sec power (101)
+        for nslc in latest_picks:
+           # if 'EHZ' in nslc:
+                T2 = datetime.now(timezone.utc)
+                T1 = T2 - timedelta(days=180)
+                breach_time85, breach_value85 = find_latest_breach(nslc, T1, T2, 85, breach_mode='above',verbosity=logging.DEBUG)
+                #breach_time101, breach_value101 = find_latest_breach(nslc, T1, T2, 101, breach_mode='above',verbosity=logging.WARNING)
+                latest_picks[nslc]['rangebreachdate'] = breach_time85
+                latest_picks[nslc]['rangebreachvalue'] = breach_value85
+                #latest_picks[nslc]['pow5sbreachdate'] = breach_time101
+                #latest_picks[nslc]['pow5sbreachvalue'] = breach_value101
+
         # Convert latest_picks to a list for sorting
         latest_picks_list = list(latest_picks.items())
 
@@ -134,6 +151,9 @@ def get_last_picks_for_network(nets, sort_by_sncl=True, file_name='output.txt'):
             sorted_picks = [(nslc, result) for _, group in sorted_net_sta_groups for nslc, result in group]
 
         # Write results to file
+        daysago7 = (datetime.now() - timedelta(days=7)).timestamp()
+        daysago30 = (datetime.now() - timedelta(days=30)).timestamp()
+        daysago365 = (datetime.now() - timedelta(weeks=365)).timestamp()
         with open(file_name, 'w') as f:
             f.write(f"Version: {timestr} \n")
             f.write(f"Most recent picks used by Jiggle (either auto or analyst pick):\n")
@@ -145,15 +165,24 @@ def get_last_picks_for_network(nets, sort_by_sncl=True, file_name='output.txt'):
                 origin_lon_str = f"{result['origin_lon']:>6.3f}" if result['origin_lon'] is not None else '   N/A'
                 depth_str = f"{result['origin_depth_km']:>5.2f}" if result['origin_depth_km'] is not None else '   N/A'
                 distance_str = f"{result['distance_to_station_km']:>5.1f}" if result['distance_to_station_km'] is not None else '  N/A'
-
-                count_week = sum(1 for res in results if f"{res['net']}.{res['sta']}.{res['location']}.{res['seedchan']}" == nslc and res['datetime'] >= (datetime.now() - timedelta(weeks=1)).timestamp())
-                count_month = sum(1 for res in results if f"{res['net']}.{res['sta']}.{res['location']}.{res['seedchan']}" == nslc and res['datetime'] >= (datetime.now() - timedelta(days=30)).timestamp())
-                count_year = sum(1 for res in results if f"{res['net']}.{res['sta']}.{res['location']}.{res['seedchan']}" == nslc and res['datetime'] >= (datetime.now() - timedelta(days=365)).timestamp())
+                rangebreachdate_str = (result['rangebreachdate']).strftime('%Y-%m-%d %H:00') if result['rangebreachdate'] is not None else '  N/A'
+                rangebreachvalue_str = f"{int(result['rangebreachvalue'])}"  if result['rangebreachvalue'] is not None else '  N/A'
+                #pow5sbreachdate_str = (result['pow5sbreachdate']).strftime('%Y-%m-%d %H:00') if result['pow5sbreachdate'] is not None else '  N/A'
+                #pow5sbreachvalue_str = f"{int(result['pow5sbreachvalue'])}" if result['pow5sbreachvalue'] is not None else '  N/A'
+                count_week, count_month, count_year = 0,0,0
+                for res in results:
+                    if nslc == f"{res['net']}.{res['sta']}.{res['location']}.{res['seedchan']}":
+                        resdate = res['datetime']
+                        count_week += 1 if resdate >= daysago7 else 0
+                        count_month += 1 if resdate >= daysago30 else 0
+                        count_year += 1 if resdate >= daysago365 else 0
 
                 f.write(f"{datetime_str} {iphase_str:>2} {nslc:<16} "
                         f"Mag: {magnitude_str} Origin: ({origin_lat_str}, {origin_lon_str}) "
                         f"Depth: {depth_str} km Dist: {distance_str} km "
-                        f"N picks in last 7dys:{count_week:>3}  30dys:{count_month:>4}  365dys:{count_year:>5}\n")
+                        f" N_picks in last 7dys:{count_week:>3}  30dys:{count_month:>4}  365dys:{count_year:>5}"
+                        f" Last breach RangeMin: {rangebreachdate_str} ({rangebreachvalue_str} counts)\n")
+                        #f" Power5s breach: {pow5sbreachdate_str} ({pow5sbreachvalue_str} dB)\n")
 
         cur.close()
         conn.close()
@@ -164,6 +193,5 @@ def get_last_picks_for_network(nets, sort_by_sncl=True, file_name='output.txt'):
 if __name__ == "__main__":
     get_last_picks_for_network(nets=[], sort_by_sncl=True, file_name='latest_picks_sncl_sort')
     get_last_picks_for_network(nets=[], sort_by_sncl=False, file_name='latest_picks_time_sort')
-
 
 
