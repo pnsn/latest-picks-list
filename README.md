@@ -8,7 +8,7 @@ Simple python script that makes query to the AQMS post-processing db and finds t
 Results are spit out into two text files sorted by either NET.STA or latest pick time.
 <br>
 <br>
-Updated daily at 6am and noon (local, takes 10-15 min to run):
+Updated daily at 6am, noon, 6pm (local, takes 10-15 min to run):
 <br>
 [latest_picks_sncl_sort](https://seismo.ess.washington.edu/~ahutko/latest_picks_sncl_sort)
 <br>
