@@ -2,6 +2,7 @@ import logging
 import os
 from datetime import datetime, timedelta, timezone
 from dateutil.relativedelta import relativedelta
+import requests
 from squacapi_client.pnsn_utilities import get_client
 from squacapi_client.models import *
 
@@ -18,13 +19,15 @@ PASSWORD = os.environ["SQUACAPI_PASSWD"]
 HOST = "https://squacapi.pnsn.org"
 squac_client = get_client(USER, PASSWORD)
 
-# Load channel map from file (e.g., "channels_squacids_west_coast").
+# Load channel map from file (e.g., "squac_channel_map.txt").
+url = "https://seismo.ess.washington.edu/~ahutko/ShakeAlert_Chanfiles/squac_channel_map.txt"
+response = requests.get(url)
+lines = response.text.splitlines()
 _channel_map = {}
 try:
-    with open("channels_squacids_west_coast", "r") as f:
-        for line in f:
-            sncl, chid = line.split()[0], line.split()[1]
-            _channel_map[sncl] = chid
+    for line in lines:
+        sncl, chid = line.split()[0], line.split()[1]
+        _channel_map[sncl] = chid
 except Exception as e:
     logger.error(f"Error reading channel map file: {e}")
     raise
