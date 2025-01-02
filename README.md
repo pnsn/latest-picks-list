@@ -40,5 +40,5 @@ BD:
 This is compared to SQUAC measurements which are behind realtime by 1-3 hrs usually.  Sometimes (very rare) SQUAC can have a hiccup, which could affect this number.
 
 <br>
-![latest_picks_screengrab.png](https://github.com/user-attachments/assets/ee69feb2-d7e4-452c-bcb2-96b9ccab44ff)
+![Latest_picks_list_output.png](https://github.com/user-attachments/assets/79b94392-2ada-4e80-a4c1-af95dd296f5a)
 <br>
