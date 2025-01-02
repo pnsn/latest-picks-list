@@ -27,4 +27,4 @@ and the last time the range (in counts) exceeded "really low", i.e. last time re
 <br>
 This is determined by pulling measurements from SQUAC which is usually pretty reliable, but very rarely craps out.
 <br>
-![latest_picks_list](https://github.com/user-attachments/assets/31057ab0-287c-459b-aff5-ae97086939e6)
+![latest_picks_screengrab](https://github.com/user-attachments/assets/ee69feb2-d7e4-452c-bcb2-96b9ccab44ff)
