@@ -35,8 +35,8 @@ except Exception as e:
 # Default thresholds for known metrics:
 #   - metric_id = 85 => “hourly range”
 #   - metric_id = 101 => “5s power”
-chantypes = ["EN", "HN", "HH", "BH", "EH", "BD"]
-thresh_range = [20, 200, 550, 650, 50, 29000]  # For metric_id=85
+chantypes = ["EN", "HN", "HH", "BH", "EH", "BD", "DH"]
+thresh_range = [20, 200, 550, 650, 50, 29000, 200]  # For metric_id=85
 thresh_5s_power = [-122.6, -123.0, -130.3, -129.8, -150.0, -39.0]  # For metric_id=101
 
 DEFAULT_THRESHDICT = {
